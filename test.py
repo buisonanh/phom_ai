@@ -31,15 +31,27 @@ def has_set(my_hands):
             for k in range(j+1, len(my_hands)):
                 if my_hands[i][0] == my_hands[j][0] == my_hands[k][0]:
                     sets.append([my_hands[i], my_hands[j], my_hands[k]])
-    return sets if sets else "None"
+                for l in range(k+1, len(my_hands)):
+                    if my_hands[i][0] == my_hands[j][0] == my_hands[k][0] == my_hands[l][0]:
+                        sets.append([my_hands[i], my_hands[j], my_hands[k], my_hands[l]])
+                    
+    return sets if sets else []
 
-def has_potential_set(my_hands,set):
-    sets = []
+def has_potential_set(my_hands, sets):
+    sublists = sets
+    big_list = [item for sublist in sublists for item in sublist]
+    pot_sets = []
     for i in range(len(my_hands)):
-        for j in range(i+1, len(my_hands)):
-                if my_hands[i][0] == my_hands[j][0] and my_hands[i][0] not in set and my_hands[j][0] not in set:
-                    sets.append([my_hands[i], my_hands[j]])
-    return sets if sets else "None"
+        if my_hands[i] not in big_list:
+            for j in range(i + 1, len(my_hands)):
+                if my_hands[j] not in big_list and my_hands[i][0] == my_hands[j][0]:
+                    pot_sets.append([my_hands[i], my_hands[j]])
+                else:
+                    continue
+        else:
+            continue
+    return pot_sets if pot_sets else []
+
 
 def draw_card(deck):
     drawed_card = deck.pop()
@@ -49,8 +61,18 @@ def turn1_draw(my_hands, drawed_card):
     my_hands.append(drawed_card)
     return my_hands
 
-def turn1_play():
-    pass
+def turn1_play(my_hands, sets, potential_sets):
+    cards_in_sets = []
+    for s in sets + potential_sets:
+        cards_in_sets += s
+    merged_sets = list(set([card for s in sets+potential_sets for card in s]))
+    cards_to_keep = list(set(my_hands) - set(merged_sets))
+    if not cards_to_keep:
+        return None
+    cards_points = {card: check_points([card]) for card in cards_to_keep}
+    card_to_drop = max(cards_points, key=cards_points.get)
+    return card_to_drop
+
 
 
 def main():
@@ -63,7 +85,7 @@ def main():
     print(f"Your hand: {my_hands}")
     print(f"Points: {points}")
     print("Sets:", sets)
-    print("potential sets:", potential_set)
+    print("Potential sets:", potential_set)
     print("")
 
     # Turn 1
@@ -73,8 +95,8 @@ def main():
     potential_set = has_potential_set(my_hands, sets)
     print("Drawed card:", drawed_card)
     print(f"Your hand: {my_hands}")
-    print("Set:", sets)
-    print("potential sets:", potential_set)
+    print("Sets:", sets)
+    print("Potential sets:", potential_set)
 
     card_to_drop = turn1_play(my_hands, sets, potential_set)
     print("Card to drop:", card_to_drop)

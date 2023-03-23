@@ -1,0 +1,3 @@
+sublists = [['J Zô', 'J Bích', 'J Cơ'], ['10 Zô', '10 Tép', '10 Bích']]
+big_list = [item for sublist in sublists for item in sublist]
+print(big_list)
