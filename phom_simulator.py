@@ -1,5 +1,7 @@
 import random
 
+
+
 def generate_deck():
     names = [' Cơ',' Zô',' Bích',' Tép']
     ranks = ['K','Q','J','10','9','8','7','6','5','4','3','2','A']
@@ -14,32 +16,234 @@ def deal_cards(deck, num_players):
             player_hands[j].append(deck.pop())
     return player_hands
 
-def discard_cards(hand):
-    set_types = {'three-of-a-kind': 3, 'four-of-a-kind': 4}
-    for set_type, set_size in set_types.items():
-        for i in range(len(hand)-set_size+1):
-            set_cards = hand[i:i+set_size]
-            ranks = [card[:-3].strip() for card in set_cards]
-            if len(set(ranks)) == 1:
-                # discard all cards that are not part of the set
-                for card in set_cards:
-                    hand.remove(card)
 
-def check_points(hand):
+
+def check_points(my_hands,sets):
     ranks_dict = {'K': 13, 'Q': 12, 'J': 11, '10': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2, 'A': 1}
+    sublists = sets 
+    big_list = [item for sublist in sublists for item in sublist]
     points = 0
-    for card in hand:
-        rank = card[:-3].strip() # get the rank of the card (e.g., 'K' from 'K Bích')
-        points += ranks_dict.get(rank, 0) # add the corresponding point value to the total points
+    for card in my_hands:
+        if card not in big_list:
+            rank = card[:-3].strip() # get the rank of the card (e.g., 'K' from 'K Bích')
+            points += ranks_dict.get(rank, 0) # add the corresponding point value to the total points
     return points
 
-def ai_player():
-    deck = generate_deck()
-    my_hand = deal_cards(deck, 1)[0] # deal 9 cards to the AI player
-    discard_cards(my_hand) # discard any cards that are not part of a valid set
-    points = check_points(my_hand)
-    print(f"AI player's hand: {my_hand}")
-    print(f"AI player's points: {points}")
+def has_set(my_hands):
+    ranks_dict = {'K': 13, 'Q': 12, 'J': 11, '10': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2, 'A': 1}
+    # Break sublist to the main list
 
-if __name__ == '__main__':
-    ai_player()
+    sets = []
+    
+    for i in range(len(my_hands)):
+        for j in range(i+1, len(my_hands)):
+            for k in range(j+1, len(my_hands)):
+                if my_hands[i][0] == my_hands[j][0] == my_hands[k][0]:
+                    sets.append([my_hands[i], my_hands[j], my_hands[k]])
+                sublists = sets 
+                big_list = [item for sublist in sublists for item in sublist]
+                if my_hands[i] not in big_list and my_hands[j] not in big_list and my_hands[k] not in big_list:
+                    point_i = ranks_dict.get(my_hands[i][0], 0)
+                    point_j = ranks_dict.get(my_hands[j][0], 0)
+                    point_k = ranks_dict.get(my_hands[k][0], 0)
+                    # i j k
+                    # j i k
+                    # i k j
+                    # j k i
+                    # k j i
+                    # k i j
+                    if (point_i == (point_j - 1) and point_j == (point_k - 1) and point_k == (point_i + 2)) and my_hands[i][2:] == my_hands[j][2:] == my_hands[k][2:] or \
+                        (point_j == (point_i - 1) and point_i == (point_k - 1) and point_k == (point_j + 2)) and my_hands[i][2:] == my_hands[j][2:] == my_hands[k][2:] or \
+                        (point_i == (point_k - 1) and point_k == (point_j - 1) and point_j == (point_i + 2)) and my_hands[i][2:] == my_hands[j][2:] == my_hands[k][2:] or \
+                        (point_j == (point_k - 1) and point_k == (point_i - 1) and point_i == (point_j + 2)) and my_hands[i][2:] == my_hands[j][2:] == my_hands[k][2:] or \
+                        (point_k == (point_j - 1) and point_j == (point_i - 1) and point_i == (point_k + 2)) and my_hands[i][2:] == my_hands[j][2:] == my_hands[k][2:] or \
+                        (point_k == (point_i - 1) and point_i == (point_j - 1) and point_j == (point_k + 2)) and my_hands[i][2:] == my_hands[j][2:] == my_hands[k][2:]:
+                        sets.append([my_hands[i], my_hands[j], my_hands[k]])
+                for l in range(k+1, len(my_hands)):
+                    if my_hands[i][0] == my_hands[j][0] == my_hands[k][0] == my_hands[l][0]:
+                        sets.append([my_hands[i], my_hands[j], my_hands[k], my_hands[l]])
+                    
+    return sets if sets else []
+
+def has_potential_set(my_hands, sets):
+    ranks_dict = {'K': 13, 'Q': 12, 'J': 11, '10': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2, 'A': 1}
+    # Break sublist to the main list
+    sublists = sets 
+    big_list = [item for sublist in sublists for item in sublist]
+    pot_sets = []
+    for i in range(len(my_hands)):
+        if my_hands[i] not in big_list:
+            for j in range(i + 1, len(my_hands)):
+                if my_hands[j] not in big_list and my_hands[i][0] == my_hands[j][0]:
+                    pot_sets.append([my_hands[i], my_hands[j]])
+
+                point_i = ranks_dict.get(my_hands[i][0], 0)
+                point_j = ranks_dict.get(my_hands[j][0], 0)
+                if my_hands[j] not in big_list and my_hands[j] not in pot_sets and my_hands[i] not in pot_sets and \
+                        (point_i == (point_j + 1) and my_hands[i][2:] == my_hands[j][2:]) or \
+                    my_hands[j] not in big_list and my_hands[j] not in pot_sets and my_hands[i] not in pot_sets and \
+                        (point_j == (point_i + 1) and my_hands[i][2:] == my_hands[j][2:]):
+                    pot_sets.append([my_hands[i], my_hands[j]])
+        else:
+            continue
+    return pot_sets if pot_sets else []
+
+
+def draw_card(deck):
+    drawed_card = deck.pop()
+    return drawed_card
+
+# Turn
+def turn_draw(my_hands, drawed_card):
+    my_hands.append(drawed_card)
+    return my_hands
+
+def turn_play(my_hands, sets, potential_sets):
+    cards_in_sets = []
+    for s in sets + potential_sets:
+        cards_in_sets += s
+    merged_sets = list(set([card for s in sets+potential_sets for card in s]))
+    cards_to_keep = list(set(my_hands) - set(merged_sets))
+    if not cards_to_keep:
+        return None
+    cards_points = {card: check_points([card],sets) for card in cards_to_keep}
+    card_to_drop = max(cards_points, key=cards_points.get)
+    my_hands.remove(card_to_drop)
+    return card_to_drop, my_hands
+
+def final(my_hands, sets):
+    sublists = sets 
+    big_list = [item for sublist in sublists for item in sublist]
+    my_hands = [card for card in my_hands if card not in big_list]
+    return my_hands, sets
+
+
+
+
+def main():
+    # Dealing turn
+    print("")
+    deck = generate_deck()
+    my_hands = deal_cards(deck, 1)[0] # deal 9 cards to the AI player
+    sets = has_set(my_hands)
+    points = check_points(my_hands, sets)
+    potential_set = has_potential_set(my_hands, sets)
+    print(f"Your hand: {my_hands}")
+    print(f"Points: {points}")
+    print("Sets:", sets)
+    print("Potential sets:", potential_set)
+    print("")
+    print("---------------------------------------------------------------------------------------------")
+
+    # Turn 1
+    print("")
+    print("___Turn 1___")
+    print("")
+    #
+    drawed_card = draw_card(deck)
+    print("Drawed card:", drawed_card)
+    #
+    my_hands = turn_draw(my_hands, drawed_card)
+    print(f"Your hand: {my_hands}")
+    #
+    sets = has_set(my_hands)
+    print("Sets:", sets)
+    #
+    potential_set = has_potential_set(my_hands, sets)
+    print("Potential sets:", potential_set)
+    #
+    points = check_points(my_hands, sets)
+    print(f"Points: {points}")
+    #
+    card_to_drop, my_hands = turn_play(my_hands, sets, potential_set)
+    print("Card to drop:", card_to_drop)
+    print("Your hands after played: ", my_hands)
+    print("---------------------------------------------------------------------------------------------")
+
+    # Turn 2
+    print("")
+    print("___Turn 2___")
+    print("")
+    #
+    drawed_card = draw_card(deck)
+    print("Drawed card:", drawed_card)
+    #
+    my_hands = turn_draw(my_hands, drawed_card)
+    print(f"Your hand: {my_hands}")
+    #
+    sets = has_set(my_hands)
+    print("Sets:", sets)
+    #
+    potential_set = has_potential_set(my_hands, sets)
+    print("Potential sets:", potential_set)
+    #
+    points = check_points(my_hands, sets)
+    print(f"Points: {points}")
+    #
+    card_to_drop, my_hands = turn_play(my_hands, sets, potential_set)
+    print("Card to drop:", card_to_drop)
+    print("Your hands after played: ", my_hands)
+    print("---------------------------------------------------------------------------------------------")
+
+    # Turn 3
+    print("")
+    print("___Turn 3___")
+    print("")
+    #
+    drawed_card = draw_card(deck)
+    print("Drawed card:", drawed_card)
+    #
+    my_hands = turn_draw(my_hands, drawed_card)
+    print(f"Your hand: {my_hands}")
+    #
+    sets = has_set(my_hands)
+    print("Sets:", sets)
+    #
+    potential_set = has_potential_set(my_hands, sets)
+    print("Potential sets:", potential_set)
+    #
+    points = check_points(my_hands, sets)
+    print(f"Points: {points}")
+    #
+    card_to_drop, my_hands = turn_play(my_hands, sets, potential_set)
+    print("Card to drop:", card_to_drop)
+    print("Your hands after played: ", my_hands)
+    print("---------------------------------------------------------------------------------------------")
+
+    # Turn 4
+    print("")
+    print("___Turn 4___")
+    print("")
+    #
+    drawed_card = draw_card(deck)
+    print("Drawed card:", drawed_card)
+    #
+    my_hands = turn_draw(my_hands, drawed_card)
+    print(f"Your hand: {my_hands}")
+    #
+    sets = has_set(my_hands)
+    print("Sets:", sets)
+    #
+    potential_set = has_potential_set(my_hands, sets)
+    print("Potential sets:", potential_set)
+    #
+    points = check_points(my_hands, sets)
+    print(f"Points: {points}")
+    #
+    card_to_drop, my_hands = turn_play(my_hands, sets, potential_set)
+    print("Card to drop:", card_to_drop)
+    print("Your hands after played: ", my_hands)
+    print("---------------------------------------------------------------------------------------------")
+
+    # Final
+    print("")
+    my_hands, sets = final(my_hands, sets)
+    print("My final hands: ", my_hands)
+
+    points = check_points(my_hands, sets)
+    print(f"Points: {points}")
+
+
+
+
+main()
