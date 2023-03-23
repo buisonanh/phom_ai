@@ -1,6 +1,5 @@
 
 
-
 #names = [' Cơ',' Zô',' Bích',' Tép']
 #ranks = ['K','Q','J','10','9','8','7','6','5','4','3','2','A']
 #Full_Deck = [f"{rank}{name}" for name in names for rank in ranks]
