@@ -33,7 +33,7 @@ def has_set(my_hands):
                     sets.append([my_hands[i], my_hands[j], my_hands[k]])
     return sets if sets else "None"
 
-def has_pottential_set(my_hands,set):
+def has_potential_set(my_hands,set):
     sets = []
     for i in range(len(my_hands)):
         for j in range(i+1, len(my_hands)):
@@ -59,24 +59,24 @@ def main():
     my_hands = deal_cards(deck, 1)[0] # deal 9 cards to the AI player
     points = check_points(my_hands)
     sets = has_set(my_hands)
-    pottential_set = has_pottential_set(my_hands, sets)
+    potential_set = has_potential_set(my_hands, sets)
     print(f"Your hand: {my_hands}")
     print(f"Points: {points}")
     print("Sets:", sets)
-    print("Pottential sets:", pottential_set)
+    print("potential sets:", potential_set)
     print("")
 
     # Turn 1
     drawed_card = draw_card(deck)
     my_hands = turn1_draw(my_hands, drawed_card)
     sets = has_set(my_hands)
-    pottential_set = has_pottential_set(my_hands, sets)
+    potential_set = has_potential_set(my_hands, sets)
     print("Drawed card:", drawed_card)
     print(f"Your hand: {my_hands}")
     print("Set:", sets)
-    print("Pottential sets:", pottential_set)
+    print("potential sets:", potential_set)
 
-    card_to_drop = turn1_play(my_hands, sets, pottential_set)
+    card_to_drop = turn1_play(my_hands, sets, potential_set)
     print("Card to drop:", card_to_drop)
 
 
