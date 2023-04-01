@@ -38,8 +38,10 @@ def has_set(my_hands):
     for i in range(len(my_hands)):
         for j in range(i+1, len(my_hands)):
             for k in range(j+1, len(my_hands)):
+                # if cards have equal points
                 if my_hands[i][0] == my_hands[j][0] == my_hands[k][0]:
                     sets.append([my_hands[i], my_hands[j], my_hands[k]])
+                # Check if other cards not in triple sets already then create new sets
                 sublists = sets 
                 big_list = [item for sublist in sublists for item in sublist]
                 if my_hands[i] not in big_list and my_hands[j] not in big_list and my_hands[k] not in big_list:
@@ -89,8 +91,15 @@ def has_potential_set(my_hands, sets):
     return pot_sets if pot_sets else []
 
 
-def draw_card(deck):
-    drawed_card = deck.pop()
+def draw_card(deck, recieved_card, potential_set):
+    ranks_dict = {'K': 13, 'Q': 12, 'J': 11, '10': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2, 'A': 1}
+    if recieved_card not in potential_set:
+        if ranks_dict.get(recieved_card, 0) > 8:
+            drawed_card = deck.pop()
+        else:
+            drawed_card = recieved_card
+    else:
+        drawed_card = recieved_card
     return drawed_card
 
 # Turn
@@ -111,11 +120,6 @@ def turn_play(my_hands, sets, potential_sets):
     my_hands.remove(card_to_drop)
     return card_to_drop, my_hands
 
-def final(my_hands, sets):
-    sublists = sets 
-    big_list = [item for sublist in sublists for item in sublist]
-    my_hands = [card for card in my_hands if card not in big_list]
-    return my_hands, sets
 
 
 
@@ -140,7 +144,9 @@ def main():
     print("___Turn 1___")
     print("")
     #
-    drawed_card = draw_card(deck)
+    recieved_card = deck.pop()
+    drawed_card = draw_card(deck,recieved_card,potential_set)
+    print("Recieved card:", recieved_card)
     print("Drawed card:", drawed_card)
     #
     my_hands = turn_draw(my_hands, drawed_card)
@@ -158,6 +164,9 @@ def main():
     card_to_drop, my_hands = turn_play(my_hands, sets, potential_set)
     print("Card to drop:", card_to_drop)
     print("Your hands after played: ", my_hands)
+
+    points = check_points(my_hands, sets)
+    print(f"Points: {points}")
     print("---------------------------------------------------------------------------------------------")
 
     # Turn 2
@@ -165,7 +174,9 @@ def main():
     print("___Turn 2___")
     print("")
     #
-    drawed_card = draw_card(deck)
+    recieved_card = deck.pop()
+    drawed_card = draw_card(deck,recieved_card,potential_set)
+    print("Recieved card:", recieved_card)
     print("Drawed card:", drawed_card)
     #
     my_hands = turn_draw(my_hands, drawed_card)
@@ -183,6 +194,8 @@ def main():
     card_to_drop, my_hands = turn_play(my_hands, sets, potential_set)
     print("Card to drop:", card_to_drop)
     print("Your hands after played: ", my_hands)
+    points = check_points(my_hands, sets)
+    print(f"Points: {points}")
     print("---------------------------------------------------------------------------------------------")
 
     # Turn 3
@@ -190,7 +203,9 @@ def main():
     print("___Turn 3___")
     print("")
     #
-    drawed_card = draw_card(deck)
+    recieved_card = deck.pop()
+    drawed_card = draw_card(deck,recieved_card,potential_set)
+    print("Recieved card:", recieved_card)
     print("Drawed card:", drawed_card)
     #
     my_hands = turn_draw(my_hands, drawed_card)
@@ -208,6 +223,8 @@ def main():
     card_to_drop, my_hands = turn_play(my_hands, sets, potential_set)
     print("Card to drop:", card_to_drop)
     print("Your hands after played: ", my_hands)
+    points = check_points(my_hands, sets)
+    print(f"Points: {points}")
     print("---------------------------------------------------------------------------------------------")
 
     # Turn 4
@@ -215,7 +232,9 @@ def main():
     print("___Turn 4___")
     print("")
     #
-    drawed_card = draw_card(deck)
+    recieved_card = deck.pop()
+    drawed_card = draw_card(deck,recieved_card,potential_set)
+    print("Recieved card:", recieved_card)
     print("Drawed card:", drawed_card)
     #
     my_hands = turn_draw(my_hands, drawed_card)
@@ -233,15 +252,10 @@ def main():
     card_to_drop, my_hands = turn_play(my_hands, sets, potential_set)
     print("Card to drop:", card_to_drop)
     print("Your hands after played: ", my_hands)
-    print("---------------------------------------------------------------------------------------------")
-
-    # Final
-    print("")
-    my_hands, sets = final(my_hands, sets)
-    print("My final hands: ", my_hands)
-
     points = check_points(my_hands, sets)
     print(f"Points: {points}")
+    print("---------------------------------------------------------------------------------------------")
+
 
 
 
