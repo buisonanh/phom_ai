@@ -3,7 +3,7 @@ import random
 
 
 def generate_deck():
-    names = [' Cơ',' Zô',' Bích',' Tép']
+    names = [' C',' Z',' B',' T']
     ranks = ['K','Q','J','10','9','8','7','6','5','4','3','2','A']
     deck = [f"{rank}{name}" for name in names for rank in ranks]
     random.shuffle(deck) # shuffle the deck
@@ -25,7 +25,8 @@ def check_points(my_hands,sets):
     points = 0
     for card in my_hands:
         if card not in big_list:
-            rank = card[:-3].strip() # get the rank of the card (e.g., 'K' from 'K Bích')
+            rank = card[:-2].strip() # get the rank of the card (e.g., 'K' from 'K B')
+            print(rank)
             points += ranks_dict.get(rank, 0) # add the corresponding point value to the total points
     return points
 
